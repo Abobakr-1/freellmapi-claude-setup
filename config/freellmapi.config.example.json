@@ -1,0 +1,63 @@
+{
+  "admin": {
+    "email": "local@freellmapi.dev",
+    "password": "CHANGE_ME_BEFORE_STARTING"
+  },
+  "keys": [
+    {
+      "platform": "groq",
+      "key": "YOUR_GROQ_KEY_HERE",
+      "label": "groq-main"
+    },
+    {
+      "platform": "google",
+      "key": "YOUR_GOOGLE_GEMINI_KEY_HERE",
+      "label": "gemini-main"
+    },
+    {
+      "platform": "kilo",
+      "label": "kilo-keyless"
+    },
+    {
+      "platform": "ovh",
+      "label": "ovh-keyless"
+    },
+    {
+      "platform": "aihorde",
+      "label": "aihorde-keyless"
+    },
+    {
+      "platform": "aisense",
+      "label": "aisense-keyless"
+    },
+    {
+      "platform": "halx",
+      "label": "halx-keyless"
+    },
+    {
+      "platform": "llm7",
+      "key": "no-key",
+      "label": "llm7-keyless"
+    },
+    {
+      "platform": "parallel",
+      "key": "no-key",
+      "label": "parallel-keyless"
+    }
+  ],
+  "customProviders": [
+    {
+      "baseUrl": "https://text.pollinations.ai/openai",
+      "apiKey": "no-key",
+      "label": "pollinations-anon",
+      "models": [
+        { "model": "openai",  "displayName": "Pollinations OpenAI", "supportsTools": true },
+        { "model": "mistral", "displayName": "Pollinations Mistral", "supportsTools": true },
+        { "model": "llama",   "displayName": "Pollinations Llama",   "supportsTools": true }
+      ]
+    }
+  ],
+  "routing": {
+    "strategy": "balanced"
+  }
+}

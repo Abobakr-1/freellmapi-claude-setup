@@ -1,0 +1,28 @@
+# Secrets — never commit these
+.env
+.env.local
+*.key
+.unified-key
+.dashboard-token
+.pid
+
+# Gateway runtime data
+server/data/*.db
+server/data/*.db-shm
+server/data/*.db-wal
+freellmapi.config.json
+*.config.local.json
+
+# Logs
+*.log
+server.log
+
+# Dependencies / build output
+node_modules/
+dist/
+build/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
