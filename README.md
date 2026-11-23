@@ -114,11 +114,17 @@ The `example` file in this repo has **placeholder keys only** — replace them w
 
 | File | What it does |
 |---|---|
-| `setup.cmd` | One-time installer: clones FreeLLMAPI, installs deps, builds, prompts for keys, writes config |
-| `OPEN-CLAUDE.cmd` | Daily launcher: starts the gateway if needed, waits for health, opens Claude Code |
+| `setup.cmd` | One-time installer: clones FreeLLMAPI, installs deps, builds, prompts for keys, writes `.env` + config |
+| `OPEN-CLAUDE.cmd` | Daily launcher: starts the gateway if needed, waits for health, configures Claude Code, opens it |
+| `scripts/read-gateway-key.mjs` | Reads the gateway key from the router's database (or a legacy `.unified-key` file) so the launcher needs no manual copy |
 | `config/freellmapi.config.example.json` | Provider + routing template with placeholder keys |
 | `docs/TROUBLESHOOTING.md` | When things go wrong |
 | `docs/PROVIDER-CAPACITY.md` | Honest numbers on what free tiers really give you |
+
+> **Where the gateway key comes from:** FreeLLMAPI generates it on first start and
+> stores it in the `settings` table of its SQLite database. `OPEN-CLAUDE.cmd` reads
+> it back automatically — you never copy it by hand. The launcher also accepts a
+> legacy `.unified-key` file if one exists.
 
 ---
 

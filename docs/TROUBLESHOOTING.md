@@ -21,15 +21,21 @@ netstat -ano | findstr :3001
 
 ## "Could not read the gateway key"
 
-The launcher reads `<router>/.unified-key`. That file is created the **first time the
-gateway starts**. If it is missing, start the gateway once by hand:
+`OPEN-CLAUDE.cmd` reads the key from the router's SQLite database via
+`scripts/read-gateway-key.mjs` (falling back to a legacy `<router>/.unified-key` file).
+It can fail if the database has not been created yet, which happens when the gateway
+has never successfully started.
+
+Start the gateway once by hand and watch for errors:
 
 ```cmd
 cd ..\freellmapi
 node server\dist\index.js
 ```
 
-The key also prints in the startup banner and lives in the dashboard under **Keys**.
+Once it prints `Server running`, the key exists. You can also read it from the
+dashboard (**Keys** page) and paste it into `%USERPROFILE%\.claude\settings.json`
+as `ANTHROPIC_AUTH_TOKEN`.
 
 ---
 

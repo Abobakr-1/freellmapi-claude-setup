@@ -63,8 +63,12 @@ ping -n 2 127.0.0.1 >nul
 goto :WAIT
 
 :READKEY
-REM --- Read the gateway key from the router's own file ---------------------
+REM --- Resolve the gateway key ---------------------------------------------
+REM The router stores it in its SQLite 'settings' table. Older/hand-made
+REM installs may also keep a .unified-key file, so try that first, then the DB.
+REM Nothing here is a secret of ours: we read the key the router already made.
 set "GATEWAYKEY="
+
 if exist "%KEYFILE%" (
   for /f "usebackq tokens=1,* delims==" %%a in ("%KEYFILE%") do (
     if /i "%%a"=="KEY" set "GATEWAYKEY=%%b"
@@ -73,11 +77,17 @@ if exist "%KEYFILE%" (
     for /f "usebackq tokens=*" %%a in ("%KEYFILE%") do if "!GATEWAYKEY!"=="" set "GATEWAYKEY=%%a"
   )
 )
+
 if "!GATEWAYKEY!"=="" (
-  echo   [X] Could not read the gateway key from:
-  echo       %KEYFILE%
-  echo       Start the gateway once, then copy the key from:
-  echo       %GATEWAY%
+  for /f "usebackq tokens=*" %%k in (`node "%ROUTER_DIR%\scripts\read-gateway-key.mjs" "%ROUTER_DIR%"`) do set "GATEWAYKEY=%%k"
+)
+
+if "!GATEWAYKEY!"=="" (
+  echo   [X] Could not read the gateway key.
+  echo.
+  echo       Open the dashboard and copy it from the Keys page:
+  echo         %GATEWAY%
+  echo.
   pause
   exit /b 1
 )
