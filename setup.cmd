@@ -125,11 +125,14 @@ if "!ENCKEY!"=="" (
 >> "%ROUTER_DIR%\.env" echo FREELLMAPI_UPDATE_CHECK=off
 echo   [OK] .env written (encryption key generated).
 
+REM Written without a BOM: PowerShell's -Encoding UTF8 emits one and a BOM
+REM makes the file invalid JSON for the server's parser.
 powershell -NoProfile -Command ^
   "$t = Get-Content -Raw '%CD%\config\freellmapi.config.example.json' | ConvertFrom-Json; " ^
   "$t.admin.password = '%ADMINPW%'; " ^
   "foreach ($k in $t.keys) { if ($k.platform -eq 'google') { $k.key = '%GKEY%' } elseif ($k.platform -eq 'groq') { $k.key = '%QKEY%' } }; " ^
-  "$t | ConvertTo-Json -Depth 10 | Set-Content -Encoding UTF8 '%ROUTER_DIR%\server\data\freellmapi.config.json'"
+  "$json = $t | ConvertTo-Json -Depth 10; " ^
+  "[System.IO.File]::WriteAllText('%ROUTER_DIR%\server\data\freellmapi.config.json', $json, (New-Object System.Text.UTF8Encoding($false)))"
 if errorlevel 1 (
   echo   [X] Could not write the config file.
   pause

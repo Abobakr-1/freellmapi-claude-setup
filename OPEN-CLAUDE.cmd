@@ -84,6 +84,8 @@ if "!GATEWAYKEY!"=="" (
 echo   [OK] Gateway healthy.
 
 REM --- Persist the Claude Code settings (idempotent) ----------------------
+REM Written via .NET UTF8Encoding($false) to avoid a BOM: PowerShell's
+REM -Encoding UTF8 emits one, and a BOM makes the file invalid JSON.
 set "CLAUDE_DIR=%USERPROFILE%\.claude"
 if not exist "%CLAUDE_DIR%" mkdir "%CLAUDE_DIR%"
 powershell -NoProfile -Command ^
@@ -96,7 +98,13 @@ powershell -NoProfile -Command ^
   "$j.env | Add-Member -NotePropertyName ANTHROPIC_DEFAULT_OPUS_MODEL -NotePropertyValue 'auto' -Force; " ^
   "$j.env | Add-Member -NotePropertyName ANTHROPIC_DEFAULT_SONNET_MODEL -NotePropertyValue 'auto' -Force; " ^
   "$j.env | Add-Member -NotePropertyName ANTHROPIC_DEFAULT_HAIKU_MODEL -NotePropertyValue 'auto' -Force; " ^
-  "$j | ConvertTo-Json -Depth 10 | Set-Content -Encoding UTF8 $p"
+  "$json = $j | ConvertTo-Json -Depth 10; " ^
+  "[System.IO.File]::WriteAllText($p, $json, (New-Object System.Text.UTF8Encoding($false)))"
+if errorlevel 1 (
+  echo   [X] Could not write %CLAUDE_DIR%\settings.json
+  pause
+  exit /b 1
+)
 echo   [OK] Claude Code configured.
 
 REM --- Pick a folder ------------------------------------------------------
