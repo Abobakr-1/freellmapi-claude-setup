@@ -108,6 +108,23 @@ if "!ADMINPW!"=="" (
 
 if not exist "%ROUTER_DIR%\server\data" mkdir "%ROUTER_DIR%\server\data"
 
+REM --- 4a. Write .env so the server reads our config, and give it a real
+REM         encryption key. Without .env a fresh clone ignores the config
+REM         entirely (FREEAPI_CONFIG_PATH would be unset).
+for /f "usebackq tokens=*" %%k in (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`) do set "ENCKEY=%%k"
+if "!ENCKEY!"=="" (
+  echo   [X] Could not generate an encryption key.
+  popd
+  pause
+  exit /b 1
+)
+> "%ROUTER_DIR%\.env" echo ENCRYPTION_KEY=!ENCKEY!
+>> "%ROUTER_DIR%\.env" echo PORT=%PORT%
+>> "%ROUTER_DIR%\.env" echo FREEAPI_CONFIG_PATH=%ROUTER_DIR%/server/data/freellmapi.config.json
+>> "%ROUTER_DIR%\.env" echo FREELLMAPI_CONTEXT_HANDOFF=on_model_switch
+>> "%ROUTER_DIR%\.env" echo FREELLMAPI_UPDATE_CHECK=off
+echo   [OK] .env written (encryption key generated).
+
 powershell -NoProfile -Command ^
   "$t = Get-Content -Raw '%CD%\config\freellmapi.config.example.json' | ConvertFrom-Json; " ^
   "$t.admin.password = '%ADMINPW%'; " ^

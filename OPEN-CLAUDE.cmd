@@ -143,7 +143,9 @@ exit /b 0
 
 REM ===========================================================================
 :IS_UP
+REM /health is unauthenticated and answers 200 when the gateway is ready.
+REM (/v1/models needs a bearer token, so it cannot be used before we know the key.)
 set "UP=0"
-powershell -NoProfile -Command "try { $r = Invoke-WebRequest -UseBasicParsing -Uri '%GATEWAY%/v1/models' -TimeoutSec 4; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>nul
+powershell -NoProfile -Command "try { $r = Invoke-WebRequest -UseBasicParsing -Uri '%GATEWAY%/health' -TimeoutSec 4; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>nul
 if not errorlevel 1 set "UP=1"
 exit /b 0
